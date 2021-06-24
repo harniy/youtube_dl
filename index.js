@@ -7,6 +7,8 @@ const path = require('path')
 const fs = require('fs')
 const app = express();
 
+const config = require('./config.json')
+
 
 
 app.use(cors())
@@ -18,33 +20,12 @@ app.listen(6000, () => {
 
 // server
 
-
-/* app.post('/', async (req, res) => {
-    console.log('start')
-
-    const URL = req.body.url;
-    const ID = req.body.id;
-
-    let info = await ytdl.getInfo(URL, (err) => console.log(err));
-    let title = info.videoDetails.title
-
-
-    //fs.createWriteStream(title + '.mp3')
-    const audio = ytdl(URL, {
-        filter: 'audioonly'
-    }).pipe(fs.createWriteStream(title + '.mp3'))
-
-    audio.on('finish', () => {
-        console.log('Send song')
-        sendAudio(title, ID)
-    })
-}) */
 app.post('/download', async (req, res) => {
     console.log('Post working ~~~~')
 
     const url = req.body.url
     const id = req.body.id
-
+    
     let info = await ytdl.getInfo(url, (err) => {throw err})
     let videoName = await info.videoDetails.title
     let title = await videoName.replace(/[&\/\\|#,+()$~%.'":*?<>{}]/g, '')
@@ -68,7 +49,7 @@ app.post('/download', async (req, res) => {
 
 // bot
 
-const token = '1746031222:AAH5EKyILBLN2GnlchDtNCjjoTBdxQJO9io'
+const token = config.token
 
 const bot = new TelegramBot(token, { polling: true })
 
@@ -135,21 +116,6 @@ const start = () => {
 
     })
 }
-
-/* const getAudio =  (videoURL, chatID) => {
-    
-     fetch('http://localhost:6000/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            url: videoURL,
-            id: chatID
-        })
-    })
-        .then(response => response.json())
-} */
 
 const getAudio = async (videoURL, chatID) => {
     console.log('Starting: Fetch ~~~~')
